@@ -1,9 +1,15 @@
 import matplotlib.pyplot as plt
-import utils.load_data as load_data
+from utils.Data import Data
 import utils.plots as plots
 
 
-cummulative_per_country = load_data.get_cummulatives()
+# We should look at metadata and discard wrong samples
+
+
+# Load the data files
+data = Data()
+
+cummulative_per_country = data.get_cummulatives()
 
 '''
 Plots of cummulative number of resistent bacterias per sample
