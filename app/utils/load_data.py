@@ -3,6 +3,7 @@ import csv
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import numpy as np
 
 gene_counts_df = pd.read_csv('../../data/res_finder_gene_count.csv', delimiter='\t')
 gene_counts = gene_counts_df.ix[:, gene_counts_df.columns[1:]]
@@ -24,14 +25,42 @@ for option in options:
 
 
 # ======================================= PLOTING =======================================
+# f, ax = plt.subplots(2, sharex=True)
+#
+# for subplot, option in enumerate(options):
+#     width = 0.75
+#     ind = 0
+#     gap = 5
+#
+#     for i, (country, samples) in enumerate(cummulative_per_country[option].iteritems()):
+#         for sample in samples:
+#             ax[subplot].bar(ind+i*gap, sample, width, color=cm.Vega20(i+1))
+#             ind += 1
+#
+# ax[0].set_title('Normalized amount of resistant bacterias per sample per country')
+# ax[1].set_title('Absolute number of resistant bacterias per sample per country')
+# plt.show()
+# ========================================================================================
+
+
+# number of bins per country
+no_bins = 2
+binned_cum_per_country = dict((option,{}) for option in options)
+for option in options:
+    for country, samples in cummulative_per_country[option].iteritems():
+        bins,edges = np.histogram(samples,no_bins)
+        binned_cum_per_country[option][country] = sorted(bins)
+
+
+# ==================================== PLOTING BINS =======================================
 f, ax = plt.subplots(2, sharex=True)
 
 for subplot, option in enumerate(options):
     width = 0.75
     ind = 0
-    gap = 5
+    gap = 1
 
-    for i, (country, samples) in enumerate(cummulative_per_country[option].iteritems()):
+    for i, (country, samples) in enumerate(binned_cum_per_country[option].iteritems()):
         for sample in samples:
             ax[subplot].bar(ind+i*gap, sample, width, color=cm.Vega20(i+1))
             ind += 1
