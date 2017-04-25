@@ -1,0 +1,44 @@
+FarmID	Sample_type	Serial_number	SampleID	Country	Species (according to code!!)	Comment	Action 	Also applicable for qPCR samples?
+9001	17	001	900117001	BG	Pig	See comment below		
+9001	18	001	900118001	BG	Poultry	Sample ID says pooled poultry feces, but shows a bacteriome and resistome very similar to 900117001 and other pooled pig feces. Host DNA analysis confirmed that both samples are from pigs. There does exists a poultry questionnaire from farm 9001.	remove from MG results, wrong lib prep	maybe
+2062	17	001	206217001	DE	Pig	The feces pool is wrongly numbered as the bacteriome is clearly from poultry. Host DNA analysis shows pig and poultry DNA.	remove from MG results, wrong lib prep	no, qpcr samples are labeled correctly
+2076	18	001	207618001	DE	Poultry	Needs to be deleted, very low amount of reads	remove from MG results	maybe
+7020	17	001	702017001	PL	Pig	Looks a bit weird, poultry alike in first MG observations… Needs more looking into.. 	looking into..	maybe
+1001	17	001	100117001	NL	Pig	3 different pools made on 1 farm during pilot phase. No questionnaire data available.	Not used for further EFFORT analysis	
+1001	17	002	100117002	NL	Pig			
+1001	17	003	100117003	NL	Pig			
+5001	17	001	500117001	BE	Pig	3 different pools made on 1 farm during pilot phase. Farm is used for further statistical analysis (questionnaire data is available). 1 of the pools needs to be selected for further analysis, or results need to be pooled. For now samples from all pools are selected for qPCR, this can still be changed.	Make decision about selection or pooling.	maybe 
+5001	17	002	500117002	BE	Pig			
+5001	17	003	500117003	BE	Pig			
+								
+9039	18	008	903918008	BG	Poultry	You would expect 001 as serial number, as there should be only 1 pool made. ID's are being checked with countries for confirmation that nothing is different from samples ending with 001.  Farm 5001 and 1001 have really 3 different pools.		no
+2072	18	003	207218003	DE	Poultry			no
+3209	17	002	320917002	FR	Pig			no
+3308	18	002	330818002	FR	Poultry			no
+9006	18	002	900618002	BG	Poultry			no
+1009			1009	NL	Pig	Only questionnaire data available, no MG or qPCR. Samples were lost. 	Not used for EFFORT analysis	
+5002			5002	BE	Poultry	Only questionnaire data available, no MG or qPCR	Not used for EFFORT analysis	maybe
+9004			9004	BG	Pigs	Only questionnaire data available, no MG or qPCR tubes. The data for second 9001 farm (pig farm) probably?	At IRAS we look again into the farm mix up.	
+								
+7001			7001	PL		Missing polish farms in MG results. Are processed right now (8-2-2017)	wait.. :)	
+7002			7002	PL				
+7003			7003	PL				
+7004			7004	PL				
+7005			7005	PL				
+7006			7006	PL				
+7007			7007	PL				
+7008			7008	PL				
+7009			7009	PL				
+7010			7010	PL				
+7011			7011	PL				
+7101			7101	PL				
+7104			7104	PL				
+7107			7107	PL				
+7112			7112	PL				
+7113			7113	PL				
+7114			7114	PL				
+7115			7115	PL				
+7116			7116	PL				
+7118			7118	PL				
+7119			7119	PL				
+								
