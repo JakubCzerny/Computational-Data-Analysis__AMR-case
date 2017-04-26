@@ -37,7 +37,7 @@ def binned_cummulative(cummulative_per_country, bins=4, show=False):
     binned_cum_per_country = dict((option,{}) for option in options)
     for option in options:
         for country, samples in cummulative_per_country[option].iteritems():
-            hist,edges = np.histogram(samples,bins)
+            hist = np.histogram(samples,bins,weights=samples)[0] / np.histogram(samples,bins)[0]
             binned_cum_per_country[option][country] = sorted(hist)
 
     f, ax = plt.subplots(2)
