@@ -42,10 +42,11 @@ class Data(object):
         sample_country = dict((self.metadata.ix[i]['sample_code'], self.metadata.ix[i]['country']) for i in range(self.metadata.shape[0]))
 
         X = np.array([drugs_per_country[sample_country[int(code)]].values for code in self.gene_counts_df.columns[1:]])
-        Y = self.gene_counts_df.ix[:, self.gene_counts_df.columns[1:]].transpose().as_matrix()
+        Y = self.gene_counts_df.ix[:, self.gene_counts_df.columns[1:]].T.values
 
         if cut_off:
             indices = np.where(Y.sum(axis=0) < cut_off)[0]
             X = np.delete(X, indices, axis=0)
             Y = np.delete(Y, indices, axis=0)
+            
         return X,Y
