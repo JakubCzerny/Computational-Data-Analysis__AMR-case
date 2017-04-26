@@ -51,29 +51,29 @@ Apply sparse linear regression (ElasticNet) for easier analysis
 Force the coefficients to be non-negative as none drug should increase the presence of the bacterias
 '''
 
+Y = data.get_gene_count_with_drugs(bins=0, cut_off=50)
+a
 # Use cut_off to get rid off samples that have less than cut_off amount of bacterias
-X,Y = data.get_gene_count_with_drugs(cut_off=30)
+X,Y = data.get_gene_count_with_drugs(bins=0, cut_off=50)
 print X.shape
 print Y.shape
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.25, random_state=1)
 
 folds = 5
-alphas = np.logspace(-8,3,10)
+alphas = np.logspace(3,4,10)
 l1_ratios = np.linspace(0,1,10,endpoint=True)
 
 # Elastic-net
-
-# NO IDEA WHY IT TELLS ME TO USE MultiTaskElasticNetCV
-
-# models = ElasticNetCV(l1_ratio=l1_ratios, alphas=alphas, verbose=1, cv=folds, positive=True, n_jobs=-1)
 models = MultiTaskElasticNetCV(l1_ratio=l1_ratios, alphas=alphas, verbose=1, cv=folds, n_jobs=-1)
 
 models.fit(X_train, Y_train)
-model.score(X_test, Y_test)
+models.score(X_test, Y_test)
 
 model_EN = ElasticNet(l1_ratio=models.l1_ratio_, alpha=models.alpha_)
-model_EN.fit([X_train,X_test], [Y_train,Y_test])
+model_EN.fit(np.concatenate((X_train,X_test)), np.concatenate((Y_train,Y_test)))
 
 print "Alpha: ", models.alpha_
 print "L1 ratio: ", models.l1_ratio_
-print "Score of Elastic-net on test data: ", model.score(X_test, Y_test)
+print "Score of Elastic-net on test data: ", models.score(X_test, Y_test)
+
+test = np.rint(model_EN.predict(X_test[0])).astype('int16')

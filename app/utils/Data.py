@@ -36,17 +36,26 @@ class Data(object):
         return cummulative_per_country
 
 
-    def get_gene_count_with_drugs(self, bin=False, cut_off=None):
+    def get_gene_count_with_drugs(self, bins=0, cut_off=None, normalized=True):
         columns = [col for col in self.country_drug_use_df if 'ldu' in col]
         drugs_per_country = dict((self.country_drug_use_df['country_2letter'].ix[i], self.country_drug_use_df[columns].ix[i]) for i in range(9))
         sample_country = dict((self.metadata.ix[i]['sample_code'], self.metadata.ix[i]['country']) for i in range(self.metadata.shape[0]))
 
         X = np.array([drugs_per_country[sample_country[int(code)]].values for code in self.gene_counts_df.columns[1:]])
-        Y = self.gene_counts_df.ix[:, self.gene_counts_df.columns[1:]].T.values
+        Y = self.gene_counts_df.ix[:, self.gene_counts_df.columns[1:]].T
+
+        if normalized:
+            meta = self.metadata.ix[:,['sample_code','norm_Bacteria_pairs']]
+            meta = meta.set_index('sample_code')
+            Y = [Y.ix[str(code)] / meta.ix[code].ix['norm_Bacteria_pairs'] for code in Y.index]
+            # Y = [Y.loc[c] / norms[i] for code in codes]
+        return Y
+        if bins != 0:
+            Y = np.histogram(Y,bins,weights=Y)[0] / np.histogram(Y,bins)[0]
 
         if cut_off:
             indices = np.where(Y.sum(axis=0) < cut_off)[0]
             X = np.delete(X, indices, axis=0)
             Y = np.delete(Y, indices, axis=0)
-            
+
         return X,Y
