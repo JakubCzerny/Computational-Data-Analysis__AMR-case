@@ -2,7 +2,7 @@ from __future__ import division
 import csv
 import pandas as pd
 import numpy as np
-
+from sklearn.preprocessing import MaxAbsScaler
 
 class Data(object):
     def __init__(self):
@@ -44,12 +44,23 @@ class Data(object):
         X = np.array([drugs_per_country[sample_country[int(code)]].values for code in self.gene_counts_df.columns[1:]])
         Y = self.gene_counts_df.ix[:, self.gene_counts_df.columns[1:]].T
 
+        # if normalized:
+        #     meta = self.metadata.ix[:,['sample_code','norm_Bacteria_pairs']]
+        #     meta = meta.set_index('sample_code')
+        #
+        #     # Y = np.array([Y.ix[str(code)].values / meta.ix[int(code)].ix['norm_Bacteria_pairs'] for code in Y.index])
+        #     for code in Y.index:
+        #         Y.ix[code] = Y.ix[code].apply(lambda x: np.divide(float(x),meta.ix[int(code),'norm_Bacteria_pairs']))
+        #
+        #     Y = Y * 1000000
+        # Y = Y.values
+
+        Y = Y.values
         if normalized:
-            meta = self.metadata.ix[:,['sample_code','norm_Bacteria_pairs']]
-            meta = meta.set_index('sample_code')
-            Y = [Y.ix[str(code)] / meta.ix[code].ix['norm_Bacteria_pairs'] for code in Y.index]
-            # Y = [Y.loc[c] / norms[i] for code in codes]
-        return Y
+            normalizer = MaxAbsScaler()
+            Y = normalizer.fit_transform(Y)
+            Y = Y * 100
+
         if bins != 0:
             Y = np.histogram(Y,bins,weights=Y)[0] / np.histogram(Y,bins)[0]
 
@@ -58,4 +69,4 @@ class Data(object):
             X = np.delete(X, indices, axis=0)
             Y = np.delete(Y, indices, axis=0)
 
-        return X,Y
+        return X,Y,normalizer
