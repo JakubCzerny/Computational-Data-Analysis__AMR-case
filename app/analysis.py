@@ -33,13 +33,13 @@ Grouped by country
 plots.cummulative(cummulative_per_country)
 
 
-'''
+'''te
 Binned cummulative number of resistent bacterias per sample
 Grouped by country
 2 variants - absolute & normalized
 '''
 plots.binned_cummulative(cummulative_per_country, bins=1)
-plots.binned_cummulative(cummulative_per_country, bins=2)
+# plots.binned_cummulative(cummulative_per_country, bins=2)
 plots.binned_cummulative(cummulative_per_country, bins=4)
 
 # Display all the plots together
@@ -70,7 +70,6 @@ print "Score of Elastic-net on test data: ", models.score(X_test, Y_test)
 model_EN = ElasticNet(l1_ratio=models.l1_ratio_, alpha=models.alpha_)
 model_EN.fit(np.concatenate((X_train,X_test)), np.concatenate((Y_train,Y_test)))
 
-i = 1
 test = np.rint(models.predict(X_test)).astype('int16')
 coeff = model_EN.coef_.T
 # coeff = models.coef_.T
@@ -82,11 +81,23 @@ maxs = np.max(coeff, axis=0)
 rng = maxs - mins
 table = -(high - (((high - low) * (maxs - coeff)) / rng))+1
 
+
+# Remap negative numbers to make them more distinquishable from small positive numbers
+coeff_differentiated = coeff.copy()
+neg_ind = np.where(coeff<0)
+for i in range(neg_ind[0].shape[0]):
+    coeff_differentiated[neg_ind[0][i],neg_ind[1][i]] = coeff[neg_ind[0][i],neg_ind[1][i]] - 2
+
+
 fig, ax = plt.subplots(2)
 x = ax[0].imshow(table, cmap=plt.cm.hot)
 plt.colorbar(mappable=x, ax=ax[0])
 
-x = ax[1].imshow(coeff, cmap=plt.cm.hot)
+
+x = ax[1].imshow(coeff_differentiated, cmap=plt.cm.hot)
 plt.colorbar(mappable=x, ax=ax[1])
+
+# x = ax[1].imshow(coeff, cmap=plt.cm.hot)
+# plt.colorbar(mappable=x, ax=ax[1])
 
 plt.show()
