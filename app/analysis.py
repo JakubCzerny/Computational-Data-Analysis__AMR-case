@@ -4,6 +4,8 @@ import utils.plots as plots
 from utils.Data import Data
 from sklearn.linear_model import ElasticNet, ElasticNetCV, MultiTaskElasticNetCV
 from sklearn.model_selection import train_test_split
+import matplotlib.colors as mcolors
+
 
 #TODO We should look at metadata and discard wrong samples
 
@@ -44,46 +46,47 @@ plots.binned_cummulative(cummulative_per_country, bins=4)
 # plt.show()
 
 
-
 '''
 Build a model for predicting the amount of each bacteria based on the used drags
 Apply sparse linear regression (ElasticNet) for easier analysis
 Force the coefficients to be non-negative as none drug should increase the presence of the bacterias
 '''
 
-# Y = data.get_gene_count_with_drugs(bins=0, cut_off=50)
-# a
-
-# Use cut_off to get rid off samples that have less than cut_off amount of bacterias
-X,Y,normalizer = data.get_gene_count_with_drugs(bins=0, cut_off=0)
-# a
-print X.shape
-print Y.shape
+X,Y,normalizer = data.get_gene_count_with_drugs(cut_off=0)
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.25, random_state=1)
 
 folds = 5
-alphas = np.logspace(2,3,4)
+alphas = np.logspace(1,5,3)
 l1_ratios = np.linspace(0,1,2,endpoint=True)
 
-# alphas = np.logspace(1,4,20)
-# l1_ratios = np.linspace(0,1,10,endpoint=True)
-
-# Elastic-net
 models = MultiTaskElasticNetCV(l1_ratio=l1_ratios, alphas=alphas, verbose=1, cv=folds, n_jobs=-1)
-
 models.fit(X_train, Y_train)
 models.score(X_test, Y_test)
-
-model_EN = ElasticNet(l1_ratio=models.l1_ratio_, alpha=models.alpha_)
-model_EN.fit(np.concatenate((X_train,X_test)), np.concatenate((Y_train,Y_test)))
 
 print "Alpha: ", models.alpha_
 print "L1 ratio: ", models.l1_ratio_
 print "Score of Elastic-net on test data: ", models.score(X_test, Y_test)
 
+model_EN = ElasticNet(l1_ratio=models.l1_ratio_, alpha=models.alpha_)
+model_EN.fit(np.concatenate((X_train,X_test)), np.concatenate((Y_train,Y_test)))
 
 i = 1
-test = np.rint(model_EN.predict(X_test[i])).astype('int16')
+test = np.rint(models.predict(X_test)).astype('int16')
+coeff = model_EN.coef_.T
+# coeff = models.coef_.T
 
-print test
-print Y_test[i]
+high=1.0
+low=0.0
+mins = np.min(coeff, axis=0)
+maxs = np.max(coeff, axis=0)
+rng = maxs - mins
+table = -(high - (((high - low) * (maxs - coeff)) / rng))+1
+
+fig, ax = plt.subplots(2)
+x = ax[0].imshow(table, cmap=plt.cm.hot)
+plt.colorbar(mappable=x, ax=ax[0])
+
+x = ax[1].imshow(coeff, cmap=plt.cm.hot)
+plt.colorbar(mappable=x, ax=ax[1])
+
+plt.show()
