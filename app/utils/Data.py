@@ -12,6 +12,7 @@ class Data(object):
     def load(self):
         self.gene_counts_df = pd.read_csv('../data/res_finder_gene_count.csv', delimiter='\t')
         self.metadata = pd.read_csv('../data/metadata.csv', delimiter='\t')
+        # self.metadata.set_index('sample_code')
         self.gene_raw_df = pd.read_csv('../data/res_finder_raw_count.csv', delimiter='\t')
         self.bacteria_count_df = pd.read_csv('../data/bacteria_genera_count.csv', delimiter='\t')
         self.country_drug_use_df = pd.read_csv('../data/country_drug_use.csv', delimiter='\t')
