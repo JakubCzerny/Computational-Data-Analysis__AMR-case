@@ -31,14 +31,17 @@ individuals_df = data.gene_counts_df.T
 n = 10
 avg_pigs_top = pigs_df.mean().sort_values()[-n:]
 pigs_df[avg_pigs_top.index].plot(kind='box')
-plt.title('Pigs')
-plt.plot(range(0,(n+1)),[pigs_df.mean().mean()]*(n+1), '-r')
+plt.title(str(n) + ' most popular bacteria genes in swine samples')
+# plt.plot(range(0,(n+1)),[pigs_df.mean().mean()]*(n+1), '-r')
+plt.xticks(range(1,n+1), data.gene_counts_df['clust_name'][avg_pigs_top.index])
 print 'Normalizd average value of bacterias for pigs ', pigs_df.mean().mean()
+
 
 avg_poultry_top = poultry_df.mean().sort_values()[-n:]
 poultry_df[avg_poultry_top.index].plot(kind='box')
-plt.title('Poultry')
-plt.plot(range(0,(n+1)),[poultry_df.mean().mean()]*(n+1), '-r')
+plt.title(str(n) + ' most popular bacteria genes in poultry samples')
+# plt.plot(range(0,(n+1)),[poultry_df.mean().mean()]*(n+1), '-r')
+plt.xticks(range(1,n+1), data.gene_counts_df['clust_name'][avg_poultry_top.index])
 print 'Normalizd average value of bacterias for poultry ', poultry_df.mean().mean()
 
 plt.show()
