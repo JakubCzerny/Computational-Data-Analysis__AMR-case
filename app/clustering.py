@@ -53,7 +53,7 @@ for model_type in ['kmeans', 'gmm']:
 
 
             if model_type == 'kmeans':
-                model = KMeans(n_clusters=n_cluster, n_jobs=3, n_init=15)
+                model = KMeans(n_clusters=n_cluster, n_jobs=3, n_init=50)
             elif model_type == 'gmm':
                 model = GaussianMixture(n_components=n_cluster, n_init=15)
             # train_individuals, test_individuals = train_test_split(individuals.iloc[1:,:], train_size = 0.8)
@@ -104,16 +104,16 @@ for model_type in ['kmeans', 'gmm']:
                 for member in cluster_members:
                     # print member
                     country_list.append(data.metadata.ix[member, 'country'])
-                    top_amr.append(gene_counts_indexed.loc[:,member].nlargest(5).index)
+                    top_amr.append(gene_counts_indexed.loc[:,member].nlargest(10).index)
 
                 c = Counter(country_list)
                 top_amr = [amr for top_per_individual in top_amr for amr in top_per_individual]
                 c_amr = Counter(top_amr)
-                cluster_info[cluster]['top_amrs'] = c_amr.most_common(5)
-                cluster_info[cluster]['predominant_country'] = c.most_common(2)
+                cluster_info[cluster]['top_amrs'] = c_amr.most_common(10)
+                cluster_info[cluster]['predominant_country'] = c.most_common(3)
                 cluster_info[cluster]['num_members'] = len(cluster_members)
 
-                if len(cluster_members) < 5:
+                if len(cluster_members) < 4:
                     small_cluster_individuals.append((category, n_cluster, len(cluster_members), cluster_members))
 
             if not final_results.has_key(model_type):
@@ -171,7 +171,7 @@ def plot_silhouettes(model_type, individuals, n_clusters, silhouette_average, si
 
     ax1.set_yticks([])
     ax1.set_xticks(np.arange(-0.5, 1, 0.1))
-    plt.suptitle(("Silhouette analysis for " + model_type + " on " + category + " with num_clusters = ", n_clusters),
+    plt.suptitle(("Silhouette analysis for " + model_type + " on " + category + " with num_clusters = " + str(n_clusters)),
                     fontsize=12, fontweight='bold')
 
     plt.show()
