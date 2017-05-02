@@ -41,7 +41,7 @@ individuals_df = data.gene_counts_df.T
 
 c_individuals_total, c_individuals_pigs, c_individuals_poultry = {},{},{}
 c_info_total, c_info_pigs, c_info_poultry = {},{},{}
-n_clusters = range(3,13)
+n_clusters = range(2,13)
 final_results = {}
 cluster_info, clustered_individuals = {},{}
 
@@ -51,14 +51,11 @@ for model_type in ['kmeans', 'gmm']:
 
         for n_cluster in n_clusters:
 
-            fig, ax1 = plt.subplots(1)
-            ax1.set_xlim([-0.2, 1])
-            ax1.set_ylim([0, len(individuals) + (len(n_clusters)+1)*10])
 
             if model_type == 'kmeans':
-                model = KMeans(n_clusters=n_cluster, n_jobs=3, n_init=50)
+                model = KMeans(n_clusters=n_cluster, n_jobs=3, n_init=15)
             elif model_type == 'gmm':
-                model = GaussianMixture(n_components=n_cluster, n_init=50)
+                model = GaussianMixture(n_components=n_cluster, n_init=15)
             # train_individuals, test_individuals = train_test_split(individuals.iloc[1:,:], train_size = 0.8)
             # kmeans.fit(train_individuals)
             #
@@ -72,21 +69,7 @@ for model_type in ['kmeans', 'gmm']:
             silhouette_values = silhouette_samples(individuals.iloc[1:,:].values, cluster_labels)
             print 'Average score for ' + category +  ' with n_clusters ' + str(n_cluster) + ': ', silhouette_average
 
-            # Prepare plots
-            y_lower = 10
-            for i in range(len(n_clusters)):
-                ith_cluster_silhouette_values = silhouette_values[cluster_labels == i]
-                ith_cluster_silhouette_values.sort()
-                size_cluster_i = ith_cluster_silhouette_values.shape[0]
-                y_upper = y_lower + size_cluster_i
 
-                color = cm.spectral(float(i) / len(n_clusters))
-                ax1.fill_betweenx(np.arange(y_lower, y_upper), 0, ith_cluster_silhouette_values,
-                                    facecolor=color, edgecolor=color, alpha=0.7)
-
-                # Plot labels
-                ax1.text(-0.05, y_lower + 0.5 * size_cluster_i, str(i))
-                y_lower = y_upper + 10
 
 
             #let's determine which individuals belong to each cluster
@@ -135,27 +118,19 @@ for model_type in ['kmeans', 'gmm']:
 
             if not final_results.has_key(model_type):
                 final_results[model_type] = {}
-            if not final_results.has_key(n_cluster):
+            if not final_results[model_type].has_key(n_cluster):
                 final_results[model_type][n_cluster] = {}
 
             final_results[model_type][n_cluster][category] = {'individuals' : individuals,
                         'clust_individuals': clustered_individuals,
                         'clust_info' : cluster_info, 'sil_avg' : silhouette_average,
-                        'sil_values' : silhouette_values, 'kmeans_model' : model}
+                        'sil_values' : silhouette_values, 'model' : model,
+                        'small_cluster' : small_cluster_individuals}
 
             clustered_individuals, cluster_info = {}, {}
+            small_cluster_individuals = []
 
-            # Plotting
-            ax1.set_title("Silhouette plot for clusters")
-            ax1.set_xlabel("Silhouette coefficient values")
-            ax1.set_ylabel("Cluster label")
 
-            ax1.axvline(x=silhouette_average, color="red", linestyle='--')
-
-            ax1.set_yticks([])
-            ax1.set_xticks(np.arange(-0.5, 1, 0.1))
-            plt.suptitle(("Silhouette analysis for KMeans on " + category + " with num_clusters = ", n_cluster),
-                            fontsize=12, fontweight='bold')
 
 
             # 2nd plot showing actual clusters formed
@@ -164,3 +139,48 @@ for model_type in ['kmeans', 'gmm']:
             # ax2.scatter(individuals[:,0], X[:,1])
 
 # plt.show()
+
+def plot_silhouettes(model_type, individuals, n_clusters, silhouette_average, silhouette_values, category):
+
+    fig, ax1 = plt.subplots(1)
+    ax1.set_xlim([-0.2, 1])
+    ax1.set_ylim([0, len(individuals) + (n_clusters+1)*10])
+
+    # Prepare plots
+    y_lower = 10
+    for i in range(n_clusters):
+        ith_cluster_silhouette_values = silhouette_values[cluster_labels == i]
+        ith_cluster_silhouette_values.sort()
+        size_cluster_i = ith_cluster_silhouette_values.shape[0]
+        y_upper = y_lower + size_cluster_i
+
+        color = cm.spectral(float(i) / n_clusters)
+        ax1.fill_betweenx(np.arange(y_lower, y_upper), 0, ith_cluster_silhouette_values,
+                            facecolor=color, edgecolor=color, alpha=0.7)
+
+        # Plot labels
+        ax1.text(-0.05, y_lower + 0.5 * size_cluster_i, str(i))
+        y_lower = y_upper + 10
+
+    # Plotting
+    ax1.set_title("Silhouette plot for clusters")
+    ax1.set_xlabel("Silhouette coefficient values")
+    ax1.set_ylabel("Cluster label")
+
+    ax1.axvline(x=silhouette_average, color="red", linestyle='--')
+
+    ax1.set_yticks([])
+    ax1.set_xticks(np.arange(-0.5, 1, 0.1))
+    plt.suptitle(("Silhouette analysis for " + model_type + " on " + category + " with num_clusters = ", n_clusters),
+                    fontsize=12, fontweight='bold')
+
+    plt.show()
+
+
+
+# Example line of unpacking
+#  sil_avg, clust_info, clust_individuals, individuals, small_cluster, sil_values, model = map(final_results['kmeans'][5]['poultry'].get, ('sil_avg', 'clust_info', 'clust_individuals', 'individuals', 'small_cluster', 'sil_values', 'model'))
+# Then we have everything needed for silhouette plots
+
+# Example of Plotting after unpacking
+# plot_silhouettes('kmeans', individuals, len(clust_info.keys()), sil_avg, sil_values, 'poultry')
