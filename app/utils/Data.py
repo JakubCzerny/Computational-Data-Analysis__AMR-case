@@ -53,8 +53,11 @@ class Data(object):
             for code in Y.index:
                 Y.ix[code] = Y.ix[code].apply(lambda x: np.divide(float(x),meta.ix[int(code),'norm_Bacteria_pairs']))
 
-            Y = Y * 1000000
-        Y = Y.values
+            # Y = Y * 1000000
+            scaler = MaxAbsScaler()
+            Y = scaler.fit_transform(Y)
+        else:
+            Y = Y.values
 
         normalizer = None
 
