@@ -5,6 +5,42 @@ import numpy as np
 
 options = ['normalized','absolute']
 
+
+def drugs_per_country(country_drug_use_df, show=False):
+    columns = [col for col in country_drug_use_df if 'ldu' in col]
+    drugs_per_country = dict((country_drug_use_df['country_2letter'].ix[i], country_drug_use_df[columns].ix[i]) for i in range(9))
+    averages = {}
+
+
+for country, drugs in drugs_per_country.iteritems():
+    averages[country] = np.mean(drugs)
+
+ticks_labels = [country for country, avg in averages.iteritems()]
+ticks_positions = [[] for i in range(len(ticks_labels))]
+# [country_drug_use_df['country_2letter'].ix[i] for i in range(9)]
+f, ax = plt.subplots(1)
+width = 0.75
+ind = 0
+gap = 0.5
+
+for i, (country, avg) in enumerate(averages.iteritems()):
+    print country, avg
+    ax.bar(ind+i*gap, avg, width, color=cm.Vega20(i+1))
+    ticks_positions[i].append(ind+i*gap)
+    ind += 1
+
+centers = [(ticks_positions[i][0] + ticks_positions[i][-1])/2 for i in range(len(ticks_labels))]
+ax.set_xticks(centers)
+ax.set_xticklabels(ticks_labels)
+
+ax.set_title('Average drugs use per country')
+plt.tight_layout()
+plt.show()
+
+    if show:
+        plt.show()
+
+
 def cummulative(cummulative_per_country, show=False):
     f, ax = plt.subplots(2)
     ticks_labels = cummulative_per_country['absolute'].keys()

@@ -34,14 +34,15 @@ Grouped by country
 plots.cummulative(cummulative_per_country)
 
 
-'''te
+'''
 Binned cummulative number of resistent bacterias per sample
 Grouped by country
 2 variants - absolute & normalized
 '''
-plots.binned_cummulative(cummulative_per_country, bins=1)
-plots.binned_cummulative(cummulative_per_country, bins=2)
-plots.binned_cummulative(cummulative_per_country, bins=4)
+# plots.binned_cummulative(cummulative_per_country, bins=1)
+# plots.binned_cummulative(cummulative_per_country, bins=2)
+# plots.binned_cummulative(cummulative_per_country, bins=5)
+plots.drugs_per_country(data.country_drug_use_df)
 
 # Display all the plots together
 plt.show()
