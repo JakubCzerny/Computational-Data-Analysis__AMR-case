@@ -11,6 +11,7 @@ with open('pigs.csv', 'wb') as csvfile:
     writer = csv.writer(csvfile)
     for key,value in pigs_clusters.iteritems():
         writer.writerow([key])
+        writer.writerow([value['num_members']])
         for amr_name, amr_val in value['top_amrs']:
             writer.writerow([amr_name, amr_val/float(value['num_members'])*100])
         for country_name, country_val in value['predominant_country']:
@@ -24,6 +25,7 @@ with open('poultry.csv', 'wb') as csvfile:
     writer = csv.writer(csvfile)
     for key,value in poultry_clusters.iteritems():
         writer.writerow([key])
+        writer.writerow([value['num_members']])
         for amr_name, amr_val in value['top_amrs']:
             writer.writerow([amr_name, amr_val/float(value['num_members'])*100])
         for country_name, country_val in value['predominant_country']:
